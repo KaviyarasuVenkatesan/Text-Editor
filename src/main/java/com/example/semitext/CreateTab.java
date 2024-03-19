@@ -148,9 +148,15 @@ public class CreateTab {
 
     public void saveFile(File file , Stage stage) {
         Tab checker = tabpane.getSelectionModel().getSelectedItem();
+        TextArea checkerTextArea = TabAndTextAreaMap.get(checker);
         File checkerMatchingFile = TabAndFileMap.get(checker);
         if (checkerMatchingFile == null) {
-            saveAsFile(stage);
+            if ( checkerTextArea.getText().isEmpty()) {
+                showPopupError(stage);
+            }
+            else {
+                saveAsFile(stage);
+            }
         }
         if (file != null) {
             try {
@@ -206,7 +212,7 @@ public class CreateTab {
 
         if (matchingfile != null) {
 
-            Alert alert = showAlert(Alert.AlertType.CONFIRMATION , "ERROR" , "FILE IS NOT SAVED" , "Do you want to save the file");
+            Alert alert = showAlert(Alert.AlertType.CONFIRMATION, "ERROR", "FILE IS NOT SAVED", "Do you want to save the file");
 
             ButtonType buttonTypeSave = new ButtonType("Save");
             ButtonType buttonTypeDoNotSave = new ButtonType("Don't Save");
@@ -226,7 +232,6 @@ public class CreateTab {
         } else if (!selectedTextArea.getText().isEmpty()) {
             saveAsFile(stage);
         }
-        else  showPopupError(stage);
     }
 
     private void showPopupError(Stage stage) {
