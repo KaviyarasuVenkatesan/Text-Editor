@@ -9,6 +9,7 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Optional;
 
+// creating tabs for the tab pane in stage
 public class CreateTab {
 
     private final HashMap<Tab, TextArea> TabAndTextAreaMap = new HashMap<>();
@@ -30,6 +31,9 @@ public class CreateTab {
         return file;
     }
 
+    // creating tab contains border pane
+    // In border pane textarea at center and menubar at top
+    // menubar contains menu
     public Tab createNewTab(Stage stage) {
         BorderPane tabContent = new BorderPane();
         TextArea textarea = new TextArea();
@@ -41,7 +45,7 @@ public class CreateTab {
         MenuBar menubar = new MenuBar();
         Menu menu = new Menu("file");
 
-        prepareNewFile(menu , stage);
+        // preparing menu items
         prepareNewTabFile(menu , stage);
         prepareNewWindowFile(menu);
         prepareOpenFile(menu , stage);
@@ -58,12 +62,8 @@ public class CreateTab {
         return newTab;
 
     }
-    private void prepareNewFile(Menu menu , Stage stage ){
-        MenuItem newMenu = new MenuItem("New");
-        newMenu.setOnAction(actionEvent -> showNewFile(stage));
-        menu.getItems().add(newMenu);
-    }
 
+    // preparing new tab menu item
     private void prepareNewTabFile(Menu menu, Stage stage) {
         MenuItem newTabMenu = new MenuItem("New Tab           Control+N");
         newTabMenu.setOnAction(actionEvent -> {
@@ -74,6 +74,7 @@ public class CreateTab {
         menu.getItems().add(newTabMenu);
     }
 
+    // preparing new window menu item
     private void prepareNewWindowFile(Menu menu) {
         MenuItem newWindowMenu = new MenuItem("New Window      Control+Shift+N");
         newWindowMenu.setOnAction(actionEvent -> {
@@ -86,36 +87,43 @@ public class CreateTab {
         menu.getItems().add(newWindowMenu);
     }
 
+    //preparing open file menu item
     private void prepareOpenFile(Menu menu , Stage stage){
         MenuItem openMenu = new MenuItem("Open                Control+O");
         openMenu.setOnAction(actionEvent -> openFile(stage));
         menu.getItems().add(openMenu);
     }
 
+    //preparing save file menu item
     private void prepareSaveFile(Menu menu , Stage stage){
         MenuItem saveMenu = new MenuItem("Save                 Control+S");
         saveMenu.setOnAction(actionEvent -> saveFile(file , stage));
         menu.getItems().add(saveMenu);
     }
 
+    //preparing saveAs file menu item
     private void prepareSaveAsFile(Menu menu , Stage stage) {
         MenuItem saveAsMenu = new MenuItem("Save As             Control+Shift+S");
         saveAsMenu.setOnAction(actionEvent -> saveAsFile(stage));
         menu.getItems().add(saveAsMenu);
     }
 
+    // preparing clear menu item
+    // we select the tab to clear the textarea
     private void prepareClearFile(Menu menu) {
         MenuItem clearMenu = new MenuItem("Clear                  Control+C");
         clearMenu.setOnAction(actionEvent -> clearFile());
         menu.getItems().add(clearMenu);
     }
 
+    // preparing exit menu item
     private void prepareExitFile(Menu menu){
         MenuItem exitMenu = new MenuItem("Exit                      ESC");
-        exitMenu.setOnAction(actionEvent -> System.exit(1));
+        exitMenu.setOnAction(actionEvent -> exit());
         menu.getItems().addAll(new SeparatorMenuItem() , exitMenu);
     }
 
+    // open file menu item's function
     public void openFile(Stage stage){
 
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
@@ -146,13 +154,14 @@ public class CreateTab {
         }
     }
 
+    // save file menu item's function
     public void saveFile(File file , Stage stage) {
         Tab checker = tabpane.getSelectionModel().getSelectedItem();
         TextArea checkerTextArea = TabAndTextAreaMap.get(checker);
         File checkerMatchingFile = TabAndFileMap.get(checker);
         if (checkerMatchingFile == null) {
             if ( checkerTextArea.getText().isEmpty()) {
-                showPopupError(stage);
+                showPopupAlert(stage);
             }
             else {
                 saveAsFile(stage);
@@ -172,6 +181,7 @@ public class CreateTab {
         }
     }
 
+    // saveAs file menu item's function
     public void saveAsFile(Stage stage) {
 
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
@@ -190,12 +200,20 @@ public class CreateTab {
         }
     }
 
+    // clear menu item's function
     public void clearFile(){
         Tab selectedTab = tabpane.getSelectionModel().getSelectedItem();
         TextArea selectedTextArea = TabAndTextAreaMap.get(selectedTab);
         selectedTextArea.clear();
     }
 
+    // exit menu item's function
+    public void exit()
+    {
+        System.exit(0);
+    }
+
+    // preparing Alert method
     private Alert showAlert(Alert.AlertType type , String title , String header , String content)
     {
         Alert alert = new Alert(type);
@@ -205,36 +223,8 @@ public class CreateTab {
         return alert;
     }
 
-    public void showNewFile(Stage stage) {
-        Tab selectedTab = tabpane.getSelectionModel().getSelectedItem();
-        TextArea selectedTextArea = TabAndTextAreaMap.get(selectedTab);
-        File matchingfile = TabAndFileMap.get(selectedTab);
-
-        if (matchingfile != null) {
-
-            Alert alert = showAlert(Alert.AlertType.CONFIRMATION, "ERROR", "FILE IS NOT SAVED", "Do you want to save the file");
-
-            ButtonType buttonTypeSave = new ButtonType("Save");
-            ButtonType buttonTypeDoNotSave = new ButtonType("Don't Save");
-            ButtonType buttonTypeCancel = new ButtonType("Cancel");
-
-            alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeDoNotSave, buttonTypeCancel);
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent()) {
-                if (result.get() == buttonTypeSave) {
-                    saveFile(file, stage);
-                }
-                if (result.get() == buttonTypeDoNotSave) {
-                    tabpane.getTabs().remove(selectedTab);
-                }
-            }
-        } else if (!selectedTextArea.getText().isEmpty()) {
-            saveAsFile(stage);
-        }
-    }
-
-    private void showPopupError(Stage stage) {
+    // preparing PopupAlert message for save an empty file
+    private void showPopupAlert(Stage stage) {
 
         Alert alert = showAlert(Alert.AlertType.CONFIRMATION , "Empty File" , null , "Do you want to save an Empty File");
 

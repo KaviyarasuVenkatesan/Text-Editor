@@ -11,6 +11,7 @@ public class HelloApplication extends Application {
         createStage.setStage();
     }
 
+    // entry point for JavaFX Application
     public static void main(String[] args){
         launch();
     }

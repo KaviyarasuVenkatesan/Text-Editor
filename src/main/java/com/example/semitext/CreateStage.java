@@ -16,6 +16,7 @@ public class CreateStage
         this.stage = stage;
     }
 
+    // setting the stage
     public void setStage()
     {
         tabPane = new TabPane();
@@ -36,9 +37,11 @@ public class CreateStage
         });
     }
 
+    // creating the scene for the stage
     private Scene createScene(CreateTab createTab){
         Scene scene = new Scene(tabPane, 800, 600);
 
+        // preparing shortcut keys
         scene.setOnKeyPressed(event -> {
             if (event.isControlDown() && event.getCode() == KeyCode.N) {
                 tabPane.getTabs().add(createTab.createNewTab(stage));
